@@ -10,8 +10,9 @@ import utilities
 #### END USER DEFINED MODULES ####
 
 # BEGIN CONSTANTS ####
-NUM_MESSAGES = 60
-TIME_BETWEEN_MESSAGES = 0.1 # [s]
+NUM_MESSAGES = 1000
+TIME_DELAY_BETWEEN_MESSAGES = 0.001 # [s]
+TIME_DELAY_WITHIN_THREAD = 0.025 # [s]
 # END CONSTANTS ####
 
 # Instantiate a queue to pass messages between threads
@@ -24,6 +25,7 @@ def receiver_1_worker_execution(results_dict = None):
 	print(f"Reciever 1 retrieved a message from the message queue: {message}")
 	if(None != results_dict):
 		results_dict["receiver_1_results"].append(message)
+	time.sleep(TIME_DELAY_WITHIN_THREAD)
 
 # Helper function for receiver_2_worker
 @utilities.function_run_time
@@ -60,12 +62,8 @@ def main(arg = None, argv = None):
 	# Results dictionary to pass between threads
 	results_dict = {"receiver_1_results" : [], "receiver_2_results" : []}
 
-	# Threads to receive messages
-	receiver_1_thread = threading.Thread(target = receiver_1_worker, daemon = True)
-	receiver_2_thread = threading.Thread(target = receiver_2_worker, daemon = True)
-
-	# receiver_1_thread = threading.Thread(target = receiver_1_worker, args = (results_dict,), daemon = True)
-	# receiver_2_thread = threading.Thread(target = receiver_2_worker, args = (results_dict,), daemon = True)
+	receiver_1_thread = threading.Thread(target = receiver_1_worker, args = (results_dict,), daemon = True)
+	receiver_2_thread = threading.Thread(target = receiver_2_worker, args = (results_dict,), daemon = True)
 	
 	receiver_1_thread.start()
 	receiver_2_thread.start()
@@ -74,9 +72,9 @@ def main(arg = None, argv = None):
 	for i in range(NUM_MESSAGES):
 		message = f"Message {i}"
 		message_queue.put(message)
-		time.sleep(TIME_BETWEEN_MESSAGES)
+		time.sleep(TIME_DELAY_BETWEEN_MESSAGES)
 
-    print(results_dict)
+	print(results_dict)
 	return 0
 
 if __name__ == '__main__':
