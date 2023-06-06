@@ -10,13 +10,14 @@ import utilities
 #### END USER DEFINED MODULES ####
 
 # BEGIN CONSTANTS ####
+MESSAGE_QUEUE_CAPACITY = 10
 NUM_MESSAGES = 1000
 TIME_DELAY_BETWEEN_MESSAGES = 0.001 # [s]
 TIME_DELAY_WITHIN_THREAD = 0.025 # [s]
 # END CONSTANTS ####
 
 # Instantiate a queue to pass messages between threads
-message_queue = queue.Queue()
+message_queue = queue.Queue(MESSAGE_QUEUE_CAPACITY)
 
 # Helper function for receiver_1_worker
 @utilities.function_run_time
